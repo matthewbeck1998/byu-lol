@@ -53,7 +53,7 @@ const App = () => {
 
   const options: Highcharts.Options = {
     title: { text: "BYU LoL Tracker" },
-    subtitle: { text: "Season 2023 Split 2" },
+    subtitle: { text: "Season 2024 Split 1" },
     tooltip: {
       pointFormatter: function () {
         if (!this.y) return this.series.name;
