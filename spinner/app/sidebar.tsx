@@ -30,7 +30,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="grid grid-cols-[1fr_auto_auto] auto-rows-[50px]">
+    <div className="grid grid-cols-[1fr_auto_auto] auto-rows-[50px] text-2xl p-1">
       <div className="flex flex-row items-center">
         <span className="p-1">Chosen</span>
       </div>
@@ -46,7 +46,7 @@ export default function Sidebar() {
           </Row>
         );
       })}
-      <Input className="p-1"></Input>
+      <Input className="flex p-1 items-center" slotProps={{ input: { className: "rounded" } }} />
       <Button className="p-1 col-span-2">Add</Button>
     </div>
   );
