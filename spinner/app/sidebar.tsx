@@ -30,24 +30,32 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="grid grid-cols-[1fr_auto_auto] auto-rows-[50px] text-2xl p-1">
-      <div className="flex flex-row items-center">
-        <span className="p-1">Chosen</span>
+    <div className="flex flex-col gap-4">
+      <div className="grid grid-cols-[1fr_80px] auto-rows-[32px] gap-4">
+        <div className="flex flex-row items-center">
+          <span className="p-1 text-3xl">Chosen</span>
+        </div>
+        <Button className="p-1 bg-green-500 rounded">Spin</Button>
       </div>
-      <Button className="p-1 col-span-2">Spin</Button>
-      {players.map((player, i) => {
-        return (
-          <Row key={i}>
-            <div className="flex flex-row items-center">
-              <span className="p-1">{player}</span>
-            </div>
-            <Button className="p-1">Edit</Button>
-            <Button className="p-1">Delete</Button>
-          </Row>
-        );
-      })}
-      <Input className="flex p-1 items-center" slotProps={{ input: { className: "rounded" } }} />
-      <Button className="p-1 col-span-2">Add</Button>
+      <div className="grid grid-cols-[1fr_80px] auto-rows-[32px] gap-4 h-[480px] overflow-y-scroll">
+        {players.map((player, i) => {
+          return (
+            <Row key={i}>
+              <div className="flex flex-row items-center">
+                <span className="p-1 text-xl">{player}</span>
+              </div>
+              <Button className="p-1 bg-red-500 rounded">Delete</Button>
+            </Row>
+          );
+        })}
+      </div>
+      <div className="grid grid-cols-[1fr_80px] auto-rows-[32px] gap-4">
+        <Input
+          className="flex items-center"
+          slotProps={{ input: { className: "bg-white text-black h-full w-full rounded p-1" } }}
+        />
+        <Button className="p-1 bg-blue-500 rounded">Add</Button>
+      </div>
     </div>
   );
 }

@@ -3,23 +3,20 @@ import Image from "next/image";
 
 export default function Header() {
   return (
-    <div className="flex flex-row p-1">
-      <Button className="p-1">
+    <div className="flex flex-row border-b-2 p-2">
+      <Button>
         <Image
           src="/lol-logo.svg"
-          height={80}
-          width={80}
+          height={72}
+          width={72}
           alt="League of Legends Logo"
         />
       </Button>
       <div className="flex flex-1 p-1 items-center">
-        <span className="text-5xl">BYU LoL Spinner</span>
+        <span className="text-4xl">BYU LoL Spinner</span>
       </div>
       <div className="flex flex-row-reverse flex-1 p-1 items-center">
-        <Button
-          className="p-1"
-          href="https://github.com/matthewbeck1998/byu-lol"
-        >
+        <Button href="https://github.com/matthewbeck1998/byu-lol">
           <Image
             src="/github-logo.svg"
             height={40}
