@@ -16,4 +16,4 @@ The [BYU LoL Tracker](https://byu-lol-tracker.vercel.app/) website tracks BYU Lo
 
 ## byu-lol-spinner
 
-The [BYU LoL Spinner](https://byu-lol-spinner.vercel.app/) website facilitates role selection for League of Legends in-house custom games. Special thanks to @muahahayes of Utah Valley University for their initial idea of the Spinner. Check out [their implementation](https://muahahayes.github.io/leaguespinner/ls.html) here.
+The [BYU LoL Spinner](https://byu-lol-spinner.vercel.app/) website facilitates role selection for League of Legends in-house custom games. Special thanks to [@Muahahayes](https://github.com/Muahahayes) of Utah Valley University for their initial idea of the Spinner. Check out [their implementation](https://muahahayes.github.io/leaguespinner/ls.html) here.
