@@ -1,4 +1,40 @@
+# byu-lol-spinner
+
+The [BYU LoL Spinner](https://byu-lol-spinner.vercel.app/) website facilitates role selection for League of Legends in-house custom games.
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+## How To Use It
+
+1. First, add players to the player list using the input provided in sidebar to the right.
+2. When all players are present in the player list, use the Spin button to randomly choose a player from the list.
+3. The chosen player will then need to select a role by clicking on the corresponding role's icon.
+4. Repeat this process for all players until there are either no players left or both teams are completely filled.
+
+## Helpful Tips
+
+- You can add as many players to the list as you want. This is helpful in cases where you have more than 10 players that want to play in a given game.
+- To unselect a player from a role, click their name to choose the player and select their role as in step 3.
+- You can swap two players in the same role by clicking the Swap button.
+- Once you are satisfied with your teams, you can copy the team assignments to your clipboard by clicking the Copy button.
+
+### Copy Example
+
+```
+Top: Blue Top - Red Top
+Jungle: Blue Jungle - Red Jungle
+Mid: Blue Mid - Red Mid
+Bot: Blue Bot - Red Bot
+Support: Blue Support - Red Support
+```
+
+## How It Works
+
+The Spinner is built using the [Next.js](https://nextjs.org/) framework.
+
+The user interface utilizes [Material Base UI](https://mui.com/base-ui/getting-started/) library components using [Tailwind CSS](https://tailwindcss.com/docs/installation) for styling.
+
+To make things easy, the Spinner uses [Vercel](https://vercel.com/) to deploy the application to the [website](https://byu-lol-spinner.vercel.app/). There's a lot of [DevOps magic](https://vercel.com/blog/what-is-vercel) happening under the hood here that we're not going to get into here, but it's cool stuff that I highly recommend looking into if you're so inclined.
 
 ## Getting Started
 
