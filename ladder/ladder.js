@@ -167,6 +167,6 @@ function updateLadder() {
   const vectors = summoners.map(({ rank, opggLink, summonerName, discordName, studentStatus, preferredRoles }) => [toRankString(rank), toLpString(rank), toSummonerNameString(summonerName), opggLink, discordName, studentStatus, preferredRoles]);
 
   if (!vectors.length) return;
-  ladderSheet.getRange(2, 1, ladderSheet.getMaxRows(), ladderSheet.getMaxColumns() - 1).clearContent();
+  ladderSheet.getRange(2, 1, ladderSheet.getMaxRows() - 1, ladderSheet.getMaxColumns() - 1).clearContent();
   ladderSheet.getRange(2, 1, vectors.length, ladderSheet.getMaxColumns() - 1).setValues(vectors);
 }
