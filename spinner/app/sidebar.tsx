@@ -1,5 +1,5 @@
 import { Button, Input } from "@mui/base";
-import { ChangeEvent, Dispatch, PropsWithChildren, useState } from "react";
+import { ChangeEvent, Dispatch, KeyboardEvent, PropsWithChildren, useState } from "react";
 import { Action, State } from "./page";
 
 function Row(props: PropsWithChildren) {
@@ -27,6 +27,12 @@ export default function Sidebar({ state, dispatch }: SidebarProps) {
     dispatch({ type: "ADD", player });
     setPlayer("");
   };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== "Enter") return;
+    dispatch({ type: "ADD", player });
+    setPlayer("");
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -70,6 +76,7 @@ export default function Sidebar({ state, dispatch }: SidebarProps) {
             },
           }}
           onChange={handleInput}
+          onKeyDown={handleKeyDown}
           value={player}
         />
         <Button className="p-1 bg-blue-500 rounded" onClick={handleAdd}>
