@@ -159,7 +159,7 @@ export default function Home() {
       }}
     >
       <Header />
-      <div className="grid grid-cols-[1fr_320px] gap-8 p-4">
+      <div className="grid grid-cols-[3fr_1fr] gap-8 p-4">
         <Main state={state} dispatch={dispatch} />
         <Sidebar state={state} dispatch={dispatch} />
       </div>
