@@ -17,15 +17,28 @@ function sendRequest(url, options) {
   return JSON.parse(UrlFetchApp.fetch(url, options).getContentText());
 }
 
-function getSummoner(summonerName) {
-  const url = `https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${summonerName}`;
+function getAccount(riotId) {
+  const [gameName, tagLine] = riotId.split("#");
+  const url = `https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}`;
+  const options = { headers: { "X-Riot-Token": API_KEY } };
+  const response = doWithRetry(() => sendRequest(url, options), 2);
+  return response;
+}
+
+function testGetAccount() {
+  const account = getAccount("David O McKay#NA1");
+  Logger.log(account);
+}
+
+function getSummoner(account) {
+  const url = `https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${account.puuid}`;
   const options = { headers: { "X-Riot-Token": API_KEY } };
   const response = doWithRetry(() => sendRequest(url, options), 2);
   return response;
 }
 
 function testGetSummoner() {
-  const summoner = getSummoner("David O McKay");
+  const summoner = getSummoner("QXMl_0PrFKXhP3fn4smgk9CM8mPqpGr1t7p8BS6UZVGL_8psCzGZHOOtopZONUeK68uhFxJpqpsyrQ");
   Logger.log(summoner);
 }
 
@@ -46,14 +59,15 @@ function getRank(summoner) {
 }
 
 function testGetRank() {
-  const summoner = getSummoner("Pianobruh");
+  const account = getAccount("Pianobruh#NA2");
+  const summoner = getSummoner(account);
   const rank = getRank(summoner);
   Logger.log(rank);
 }
 
 function getPlayers() {
   const vectors = playerSheet.getSheetValues(2, 2, playerSheet.getLastRow() - 1, playerSheet.getMaxColumns() - 1);
-  const players = vectors.map(([summonerName, discordName, studentStatus, preferredRoles]) => ({ summonerName, discordName, studentStatus, preferredRoles }));
+  const players = vectors.map(([riotId, discordName, studentStatus, preferredRoles]) => ({ riotId, discordName, studentStatus, preferredRoles }));
   return players;
 }
 
@@ -111,8 +125,8 @@ function compareSummoners(a, b) {
   return 0;
 }
 
-function getOpggLink(summonerName) {
-  const opggLink = `=HYPERLINK("https://www.op.gg/summoners/na/${summonerName}", "Link")`;
+function getOpggLink(account) {
+  const opggLink = `=HYPERLINK("https://www.op.gg/summoners/na/${account.gameName}-${account.tagLine}", "Link")`;
   return opggLink;
 }
 
@@ -127,12 +141,13 @@ function getSummoners() {
 
   players.forEach((player) => {
     try {
-      const summoner = getSummoner(player.summonerName);
+      const account = getAccount(player.riotId);
+      const summoner = getSummoner(account);
       const rank = getRank(summoner);
-      const opggLink = getOpggLink(player.summonerName);
+      const opggLink = getOpggLink(account);
       summoners.push({ ...player, rank, opggLink });
     } catch (error) {
-      Logger.log(`Failed to retrieve data for ${player.summonerName}.`);
+      Logger.log(`Failed to retrieve data for ${player.riotId}.`);
     }
   });
 
@@ -155,16 +170,16 @@ function toLpString(rank) {
   return `${rank.lp} LP`
 }
 
-const toBeRemembered = new Set(["Swiftblessed"]);
+const toBeRemembered = new Set(["Swiftblessed#NA1"]);
 
-function toSummonerNameString(name) {
+function toRiotIdString(name) {
   if (toBeRemembered.has(name)) return `${name} (RIP)`;
   return name;
 }
 
 function updateLadder() {
   const summoners = getSummoners();
-  const vectors = summoners.map(({ rank, opggLink, summonerName, discordName, studentStatus, preferredRoles }) => [toRankString(rank), toLpString(rank), toSummonerNameString(summonerName), opggLink, discordName, studentStatus, preferredRoles]);
+  const vectors = summoners.map(({ rank, opggLink, riotId, discordName, studentStatus, preferredRoles }) => [toRankString(rank), toLpString(rank), toRiotIdString(riotId), opggLink, discordName, studentStatus, preferredRoles]);
 
   if (!vectors.length) return;
   ladderSheet.getRange(2, 1, ladderSheet.getMaxRows() - 1, ladderSheet.getMaxColumns() - 1).clearContent();
