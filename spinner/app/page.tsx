@@ -5,6 +5,8 @@ import { useReducer } from "react";
 import Header from "./header";
 import Main from "./main";
 import Sidebar from "./sidebar";
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 
 const beaufort = localFont({ src: "../public/beaufort.ttf" });
 
@@ -30,8 +32,10 @@ export type Action =
   | SpinAction
   | PickAction
   | SwapAction
+  | DropAction
   | ClearAction
-  | FillAction;
+  | FillAction
+  | TrashAction;
 
 type AddAction = {
   type: "ADD";
@@ -57,6 +61,16 @@ type SwapAction = {
   role: keyof Team;
 };
 
+type DropAction = {
+  type: "DROP";
+  playerDropped: string;
+  droppedTeam: "blue" | "red";
+  droppedRole: keyof Team;
+  playerReplaced: string;
+  replacedTeam: "blue" | "red";
+  replacedRole: keyof Team;
+};
+
 type ClearAction = {
   type: "CLEAR";
 };
@@ -65,6 +79,12 @@ type FillAction = {
   type: "FILL";
   team: "blue" | "red";
   role: keyof Team;
+};
+
+type TrashAction = {
+  type: "TRASH";
+  team: "blue" | "red" | null;
+  role: keyof Team | null;
 };
 
 const initialState: State = {
@@ -126,6 +146,19 @@ const reducer = (state: State, action: Action) => {
         red: { ...state.red, [action.role]: state.blue[action.role] },
       };
 
+    case "DROP":
+      if (action.droppedTeam == action.replacedTeam)
+        return {
+          ...state,
+          [action.droppedTeam]: { ...state[action.droppedTeam], [action.droppedRole]: action.playerReplaced, [action.replacedRole]: action.playerDropped },
+        };
+      else if (action.droppedTeam != action.replacedTeam)
+        return {
+          ...state,
+          [action.droppedTeam]: { ...state[action.droppedTeam], [action.droppedRole]: action.playerReplaced },
+          [action.replacedTeam]: { ...state[action.replacedTeam], [action.replacedRole]: action.playerDropped },
+        };
+
     case "CLEAR":
       return {
         ...state,
@@ -141,6 +174,18 @@ const reducer = (state: State, action: Action) => {
         chosen: state[action.team][action.role],
         [action.team]: { ...state[action.team], [action.role]: "" },
       };
+
+      case "TRASH":
+        if (action.team === null && action.role === null)
+          return {
+            ...state,
+            chosen: "",
+          };
+        else if (action.team !== null && action.role !== null)
+          return {
+            ...state,
+            [action.team]: { ...state[action.team], [action.role]: "" },
+          };
 
     default:
       return state;
@@ -159,10 +204,12 @@ export default function Home() {
       }}
     >
       <Header />
-      <div className="grid grid-cols-[3fr_1fr] gap-8 p-4">
-        <Main state={state} dispatch={dispatch} />
-        <Sidebar state={state} dispatch={dispatch} />
-      </div>
+      <DndProvider backend={HTML5Backend}>
+        <div className="grid grid-cols-[3fr_1fr] gap-8 p-4">
+          <Main state={state} dispatch={dispatch} />
+          <Sidebar state={state} dispatch={dispatch} />
+        </div>
+      </DndProvider>
     </div>
   );
 }
