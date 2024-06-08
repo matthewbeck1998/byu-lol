@@ -5,6 +5,8 @@ import { useReducer } from "react";
 import Header from "./header";
 import Main from "./main";
 import Sidebar from "./sidebar";
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 
 const beaufort = localFont({ src: "../public/beaufort.ttf" });
 
@@ -30,6 +32,7 @@ export type Action =
   | SpinAction
   | PickAction
   | SwapAction
+  | DropAction
   | ClearAction
   | FillAction;
 
@@ -56,6 +59,16 @@ type SwapAction = {
   type: "SWAP";
   role: keyof Team;
 };
+
+type DropAction = {
+  type: "DROP";
+  playerDropped: string;
+  droppedTeam: "blue" | "red";
+  droppedRole: "top" | "jungle" | "mid" | "bot" | "support" | "fill";
+  playerReplaced: string;
+  replacedTeam: "blue" | "red";
+  replacedRole: "top" | "jungle" | "mid" | "bot" | "support" | "fill";
+}
 
 type ClearAction = {
   type: "CLEAR";
@@ -126,6 +139,21 @@ const reducer = (state: State, action: Action) => {
         red: { ...state.red, [action.role]: state.blue[action.role] },
       };
 
+    case "DROP":
+      if (action.droppedTeam == action.replacedTeam)
+        return {
+          ...state,
+          [action.droppedTeam]: { ...state[action.droppedTeam], [action.droppedRole]: action.playerReplaced, [action.replacedRole]: action.playerDropped },
+        };
+      else if (action.droppedTeam != action.replacedTeam) {
+        console.log('dropped! ', action);
+        return {
+          ...state,
+          [action.droppedTeam]: { ...state[action.droppedTeam], [action.droppedRole]: action.playerReplaced },
+          [action.replacedTeam]: { ...state[action.replacedTeam], [action.replacedRole]: action.playerDropped },
+        };
+      }
+
     case "CLEAR":
       return {
         ...state,
@@ -159,10 +187,12 @@ export default function Home() {
       }}
     >
       <Header />
-      <div className="grid grid-cols-[3fr_1fr] gap-8 p-4">
-        <Main state={state} dispatch={dispatch} />
-        <Sidebar state={state} dispatch={dispatch} />
-      </div>
+      <DndProvider backend={HTML5Backend}>
+        <div className="grid grid-cols-[3fr_1fr] gap-8 p-4">
+          <Main state={state} dispatch={dispatch} />
+          <Sidebar state={state} dispatch={dispatch} />
+        </div>
+      </DndProvider>
     </div>
   );
 }

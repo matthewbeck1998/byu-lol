@@ -2,10 +2,96 @@ import { Button } from "@mui/base";
 import Image from "next/image";
 import { Dispatch, PropsWithChildren } from "react";
 import { Action, State, Team } from "./page";
+import { useDrag, useDrop } from 'react-dnd'
 
 function Row(props: PropsWithChildren) {
   const { children } = props;
   return <>{children}</>;
+}
+
+interface RowFieldProps {
+  team: "blue" | "red";
+  role: "top" | "jungle" | "mid" | "bot" | "support" | "fill";
+  className: string;
+  text: string;
+  textClassName: string;
+  onClick: () => void;
+  dispatch: Dispatch<Action>;
+}
+
+function RowField({team, role, className, text, textClassName, onClick, dispatch}: RowFieldProps) {
+  const [{isOver, item}, drop] = useDrop(() => ({
+    accept: ItemTypes.TEXT,
+    drop: (item, monitor) => dispatch({ type: "DROP", playerDropped: item.text, droppedTeam: item.team, droppedRole: item.role, playerReplaced: text, replacedTeam: team, replacedRole: role }),
+    collect: monitor => ({
+      isOver: !!monitor.isOver({shallow: true}),
+      item: monitor.getItem(),
+    }),
+  }), [text])
+
+  if (isOver) {
+    console.log('is hovering over droppable: text=', text, 'result=', item);
+  }
+
+  return <div ref={drop} className={className} onClick={onClick}>
+    {isOver && (
+      <div
+        style={{
+          height: '100%',
+          width: '100%',
+          zIndex: 1,
+          opacity: 0.5,
+          backgroundColor: 'yellow',
+      }}
+    >
+      <Text text={text} team={team} role={role} className={textClassName}></Text>
+    </div>
+    )}
+    {!isOver && <Text text={text} team={team} role={role} className={textClassName}></Text>}
+  </div>
+}
+
+const ItemTypes = {
+  TEXT: 'text'
+}
+
+interface TextProps {
+  text: string;
+  team: "blue" | "red";
+  role: "top" | "jungle" | "mid" | "bot" | "support" | "fill";
+  className: string;
+}
+
+function Text({text, team, role, className}: TextProps) {
+  const [{isDragging, didDrop, dropResult}, drag] = useDrag(() => ({
+    type: ItemTypes.TEXT,
+    item: {text, team, role},
+    collect: monitor => ({
+      isDragging: !!monitor.isDragging(),
+      didDrop: !!monitor.didDrop(),
+      dropResult: monitor.getDropResult(),
+    }),
+  }), [text])
+
+  //text = didDrop ? dropResult.text : text;
+
+  if (didDrop) {
+    console.log('from draggable: text=', text, 'result=', dropResult.text);
+  }
+
+  if (isDragging) {
+    console.log('dragging: text=', text);
+  }
+
+  return <span className={className}
+      ref={drag}
+      style={{
+        opacity: isDragging ? 0.5 : 1,
+        cursor: 'move',
+      }}
+  >
+    {text}
+  </span>
 }
 
 type MainProps = {
@@ -41,6 +127,19 @@ export default function Main({ state, dispatch }: MainProps) {
       dispatch({ type: "SWAP", role });
     };
   };
+
+  const handleDropFactory = (
+      playerDropped: string,
+      droppedTeam: "blue" | "red",
+      droppedRole: "top" | "jungle" | "mid" | "bot" | "support" | "fill",
+      playerReplaced: string,
+      replacedTeam: "blue" | "red",
+      replacedRole: "top" | "jungle" | "mid" | "bot" | "support" | "fill",
+    ) => {
+      return () => {
+        dispatch({ type: "DROP", playerDropped, droppedTeam, droppedRole, playerReplaced, replacedTeam, replacedRole });
+      };
+    };
 
   const handleFillFactory = (team: "blue" | "red", role: keyof Team) => {
     return () => {
@@ -210,18 +309,26 @@ export default function Main({ state, dispatch }: MainProps) {
         >
           <Image src="/fill-logo.png" height={40} width={40} alt="Fill Logo" />
         </Button>
-        <div
+        <RowField
+          team="blue"
+          role="fill"
           className={`flex flex-row items-center bg-gray-500/50 ${state.blue.fill && "cursor-pointer"}`}
+          text={state.blue.fill}
+          textClassName="p-1 text-blue-500 text-xl"
           onClick={handleFillFactory("blue", "fill")}
+          dispatch={dispatch}
         >
-          <span className="p-1 text-blue-500 text-xl">{state.blue.fill}</span>
-        </div>
-        <div
+        </RowField>
+        <RowField
+          team="red"
+          role="fill"
           className={`flex flex-row items-center bg-gray-500/50 ${state.red.fill && "cursor-pointer"}`}
+          text={state.red.fill}
+          textClassName="p-1 text-red-500 text-xl"
           onClick={handleFillFactory("red", "fill")}
+          dispatch={dispatch}
         >
-          <span className="p-1 text-red-500 text-xl">{state.red.fill}</span>
-        </div>
+        </RowField>
         <Button className="p-1 bg-red-500 rounded" onClick={handleClear}>
           Clear
         </Button>
