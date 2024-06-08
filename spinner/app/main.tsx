@@ -98,7 +98,7 @@ function Trash({dispatch}: TrashProps) {
           backgroundColor: 'yellow',
       }}
     >
-      <Image src="/trash-can-icon.svg" height={40} width={40} alt="Trash Logo" />
+      <Image src="/red-trash-can-icon.svg" height={40} width={40} alt="Trash Logo" />
     </div>
     )}
     {!isOver && <Image src="/red-trash-can-icon.svg" height={40} width={40} alt="Trash Logo" />}
