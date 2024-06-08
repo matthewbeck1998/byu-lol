@@ -11,7 +11,7 @@ function Row(props: PropsWithChildren) {
 
 interface RowFieldProps {
   team: "blue" | "red";
-  role: "top" | "jungle" | "mid" | "bot" | "support" | "fill";
+  role: keyof Team;
   className: string;
   text: string;
   textClassName: string;
@@ -20,18 +20,13 @@ interface RowFieldProps {
 }
 
 function RowField({team, role, className, text, textClassName, onClick, dispatch}: RowFieldProps) {
-  const [{isOver, item}, drop] = useDrop(() => ({
+  const [{isOver}, drop] = useDrop(() => ({
     accept: ItemTypes.TEXT,
-    drop: (item, monitor) => dispatch({ type: "DROP", playerDropped: item.text, droppedTeam: item.team, droppedRole: item.role, playerReplaced: text, replacedTeam: team, replacedRole: role }),
+    drop: (item) => dispatch({ type: "DROP", playerDropped: item.text, droppedTeam: item.team, droppedRole: item.role, playerReplaced: text, replacedTeam: team, replacedRole: role }),
     collect: monitor => ({
-      isOver: !!monitor.isOver({shallow: true}),
-      item: monitor.getItem(),
+      isOver: !!monitor.isOver({ shallow: true }),
     }),
   }), [text])
-
-  if (isOver) {
-    console.log('is hovering over droppable: text=', text, 'result=', item);
-  }
 
   return <div ref={drop} className={className} onClick={onClick}>
     {isOver && (
@@ -44,10 +39,10 @@ function RowField({team, role, className, text, textClassName, onClick, dispatch
           backgroundColor: 'yellow',
       }}
     >
-      <Text text={text} team={team} role={role} className={textClassName}></Text>
+      <Text text={text} team={team} role={role} className={textClassName} />
     </div>
     )}
-    {!isOver && <Text text={text} team={team} role={role} className={textClassName}></Text>}
+    {!isOver && <Text text={text} team={team} role={role} className={textClassName} />}
   </div>
 }
 
@@ -58,30 +53,18 @@ const ItemTypes = {
 interface TextProps {
   text: string;
   team: "blue" | "red";
-  role: "top" | "jungle" | "mid" | "bot" | "support" | "fill";
+  role: keyof Team;
   className: string;
 }
 
 function Text({text, team, role, className}: TextProps) {
-  const [{isDragging, didDrop, dropResult}, drag] = useDrag(() => ({
+  const [{isDragging}, drag] = useDrag(() => ({
     type: ItemTypes.TEXT,
     item: {text, team, role},
     collect: monitor => ({
       isDragging: !!monitor.isDragging(),
-      didDrop: !!monitor.didDrop(),
-      dropResult: monitor.getDropResult(),
     }),
   }), [text])
-
-  //text = didDrop ? dropResult.text : text;
-
-  if (didDrop) {
-    console.log('from draggable: text=', text, 'result=', dropResult.text);
-  }
-
-  if (isDragging) {
-    console.log('dragging: text=', text);
-  }
 
   return <span className={className}
       ref={drag}
@@ -92,6 +75,34 @@ function Text({text, team, role, className}: TextProps) {
   >
     {text}
   </span>
+}
+
+interface TrashProps {
+  dispatch: Dispatch<Action>;
+}
+
+function Trash({dispatch}: TrashProps) {
+  const [{isOver}, drop] = useDrop(() => ({
+    accept: ItemTypes.TEXT,
+    drop: (item) => dispatch({ type: "TRASH", team: item.team, role: item.role }),
+    collect: monitor => ({
+      isOver: !!monitor.isOver({shallow: true}),
+    }),
+  }))
+
+  return <div ref={drop}>
+    {isOver && (
+      <div
+        style={{
+          opacity: 0.5,
+          backgroundColor: 'yellow',
+      }}
+    >
+      <Image src="/trash-can-icon.svg" height={40} width={40} alt="Trash Logo" />
+    </div>
+    )}
+    {!isOver && <Image src="/red-trash-can-icon.svg" height={40} width={40} alt="Trash Logo" />}
+  </div>
 }
 
 type MainProps = {
@@ -128,22 +139,15 @@ export default function Main({ state, dispatch }: MainProps) {
     };
   };
 
-  const handleDropFactory = (
-      playerDropped: string,
-      droppedTeam: "blue" | "red",
-      droppedRole: "top" | "jungle" | "mid" | "bot" | "support" | "fill",
-      playerReplaced: string,
-      replacedTeam: "blue" | "red",
-      replacedRole: "top" | "jungle" | "mid" | "bot" | "support" | "fill",
-    ) => {
-      return () => {
-        dispatch({ type: "DROP", playerDropped, droppedTeam, droppedRole, playerReplaced, replacedTeam, replacedRole });
-      };
-    };
-
   const handleFillFactory = (team: "blue" | "red", role: keyof Team) => {
     return () => {
       dispatch({ type: "FILL", team, role });
+    };
+  };
+
+  const handleTrashFactory = (team: "blue" | "red" | null, role: keyof Team | null) => {
+    return () => {
+      dispatch({ type: "TRASH", team, role });
     };
   };
 
@@ -178,8 +182,7 @@ export default function Main({ state, dispatch }: MainProps) {
           textClassName="p-1 text-blue-500 text-xl"
           onClick={handleFillFactory("blue", "top")}
           dispatch={dispatch}
-        >
-        </RowField>
+        />
         <RowField
           team="red"
           role="top"
@@ -188,8 +191,7 @@ export default function Main({ state, dispatch }: MainProps) {
           textClassName="p-1 text-red-500 text-xl"
           onClick={handleFillFactory("red", "top")}
           dispatch={dispatch}
-        >
-        </RowField>
+        />
         <Button
           className="p-1 bg-white text-blue-500 rounded"
           onClick={handleSwapFactory("top")}
@@ -212,8 +214,7 @@ export default function Main({ state, dispatch }: MainProps) {
           textClassName="p-1 text-blue-500 text-xl"
           onClick={handleFillFactory("blue", "jungle")}
           dispatch={dispatch}
-        >
-        </RowField>
+        />
         <RowField
           team="red"
           role="jungle"
@@ -222,8 +223,7 @@ export default function Main({ state, dispatch }: MainProps) {
           textClassName="p-1 text-red-500 text-xl"
           onClick={handleFillFactory("red", "jungle")}
           dispatch={dispatch}
-        >
-        </RowField>
+        />
         <Button
           className="p-1 bg-white text-blue-500 rounded"
           onClick={handleSwapFactory("jungle")}
@@ -246,8 +246,7 @@ export default function Main({ state, dispatch }: MainProps) {
           textClassName="p-1 text-blue-500 text-xl"
           onClick={handleFillFactory("blue", "mid")}
           dispatch={dispatch}
-        >
-        </RowField>
+        />
         <RowField
           team="red"
           role="mid"
@@ -256,8 +255,7 @@ export default function Main({ state, dispatch }: MainProps) {
           textClassName="p-1 text-red-500 text-xl"
           onClick={handleFillFactory("red", "mid")}
           dispatch={dispatch}
-        >
-        </RowField>
+        />
         <Button
           className="p-1 bg-white text-blue-500 rounded"
           onClick={handleSwapFactory("mid")}
@@ -280,8 +278,7 @@ export default function Main({ state, dispatch }: MainProps) {
           textClassName="p-1 text-blue-500 text-xl"
           onClick={handleFillFactory("blue", "bot")}
           dispatch={dispatch}
-        >
-        </RowField>
+        />
         <RowField
           team="red"
           role="bot"
@@ -290,8 +287,7 @@ export default function Main({ state, dispatch }: MainProps) {
           textClassName="p-1 text-red-500 text-xl"
           onClick={handleFillFactory("red", "bot")}
           dispatch={dispatch}
-        >
-        </RowField>
+        />
         <Button
           className="p-1 bg-white text-blue-500 rounded"
           onClick={handleSwapFactory("bot")}
@@ -319,8 +315,7 @@ export default function Main({ state, dispatch }: MainProps) {
           textClassName="p-1 text-blue-500 text-xl"
           onClick={handleFillFactory("blue", "support")}
           dispatch={dispatch}
-        >
-        </RowField>
+        />
         <RowField
           team="red"
           role="support"
@@ -329,8 +324,7 @@ export default function Main({ state, dispatch }: MainProps) {
           textClassName="p-1 text-red-500 text-xl"
           onClick={handleFillFactory("red", "support")}
           dispatch={dispatch}
-        >
-        </RowField>
+        />
         <Button
           className="p-1 bg-white text-blue-500 rounded"
           onClick={handleSwapFactory("support")}
@@ -353,8 +347,7 @@ export default function Main({ state, dispatch }: MainProps) {
           textClassName="p-1 text-blue-500 text-xl"
           onClick={handleFillFactory("blue", "fill")}
           dispatch={dispatch}
-        >
-        </RowField>
+        />
         <RowField
           team="red"
           role="fill"
@@ -363,10 +356,17 @@ export default function Main({ state, dispatch }: MainProps) {
           textClassName="p-1 text-red-500 text-xl"
           onClick={handleFillFactory("red", "fill")}
           dispatch={dispatch}
-        >
-        </RowField>
+        />
         <Button className="p-1 bg-red-500 rounded" onClick={handleClear}>
           Clear
+        </Button>
+      </Row>
+      <Row>
+        <Button
+          className="flex items-center justify-center p-1"
+          onClick={handleTrashFactory(null, null)}
+        >
+          <Trash dispatch={dispatch} />
         </Button>
       </Row>
     </div>
