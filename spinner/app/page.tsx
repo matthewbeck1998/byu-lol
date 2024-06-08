@@ -33,9 +33,9 @@ export type Action =
   | PickAction
   | SwapAction
   | DropAction
-  | TrashAction
   | ClearAction
-  | FillAction;
+  | FillAction
+  | TrashAction;
 
 type AddAction = {
   type: "ADD";
@@ -71,12 +71,6 @@ type DropAction = {
   replacedRole: keyof Team;
 };
 
-type TrashAction = {
-  type: "TRASH";
-  team: "blue" | "red" | null;
-  role: keyof Team | null;
-};
-
 type ClearAction = {
   type: "CLEAR";
 };
@@ -85,6 +79,12 @@ type FillAction = {
   type: "FILL";
   team: "blue" | "red";
   role: keyof Team;
+};
+
+type TrashAction = {
+  type: "TRASH";
+  team: "blue" | "red" | null;
+  role: keyof Team | null;
 };
 
 const initialState: State = {
@@ -159,18 +159,6 @@ const reducer = (state: State, action: Action) => {
           [action.replacedTeam]: { ...state[action.replacedTeam], [action.replacedRole]: action.playerDropped },
         };
 
-    case "TRASH":
-      if (action.team === null && action.role === null)
-        return {
-          ...state,
-          chosen: "",
-        };
-      else if (action.team !== null && action.role !== null)
-        return {
-          ...state,
-          [action.team]: { ...state[action.team], [action.role]: "" },
-        };
-
     case "CLEAR":
       return {
         ...state,
@@ -186,6 +174,18 @@ const reducer = (state: State, action: Action) => {
         chosen: state[action.team][action.role],
         [action.team]: { ...state[action.team], [action.role]: "" },
       };
+
+      case "TRASH":
+        if (action.team === null && action.role === null)
+          return {
+            ...state,
+            chosen: "",
+          };
+        else if (action.team !== null && action.role !== null)
+          return {
+            ...state,
+            [action.team]: { ...state[action.team], [action.role]: "" },
+          };
 
     default:
       return state;

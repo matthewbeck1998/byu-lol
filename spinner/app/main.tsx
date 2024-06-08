@@ -22,7 +22,7 @@ interface RowFieldProps {
 function RowField({team, role, className, text, textClassName, onClick, dispatch}: RowFieldProps) {
   const [{isOver}, drop] = useDrop(() => ({
     accept: ItemTypes.TEXT,
-    drop: (item) => dispatch({ type: "DROP", playerDropped: item.text, droppedTeam: item.team, droppedRole: item.role, playerReplaced: text, replacedTeam: team, replacedRole: role }),
+    drop: (item: any) => dispatch({ type: "DROP", playerDropped: item.text, droppedTeam: item.team, droppedRole: item.role, playerReplaced: text, replacedTeam: team, replacedRole: role }),
     collect: monitor => ({
       isOver: !!monitor.isOver({ shallow: true }),
     }),
@@ -84,7 +84,7 @@ interface TrashProps {
 function Trash({dispatch}: TrashProps) {
   const [{isOver}, drop] = useDrop(() => ({
     accept: ItemTypes.TEXT,
-    drop: (item) => dispatch({ type: "TRASH", team: item.team, role: item.role }),
+    drop: (item: any) => dispatch({ type: "TRASH", team: item.team, role: item.role }),
     collect: monitor => ({
       isOver: !!monitor.isOver({shallow: true}),
     }),
