@@ -170,20 +170,26 @@ export default function Main({ state, dispatch }: MainProps) {
         >
           <Image src="/top-logo.png" height={40} width={40} alt="Top Logo" />
         </Button>
-        <div
-          className={`flex flex-row items-center bg-gray-500/50 ${
-            state.blue.top && "hover:cursor-pointer"
-          }`}
+        <RowField
+          team="blue"
+          role="top"
+          className={`flex flex-row items-center bg-gray-500/50 ${state.blue.top && "cursor-pointer"}`}
+          text={state.blue.top}
+          textClassName="p-1 text-blue-500 text-xl"
           onClick={handleFillFactory("blue", "top")}
+          dispatch={dispatch}
         >
-          <span className="p-1 text-blue-500 text-xl">{state.blue.top}</span>
-        </div>
-        <div
+        </RowField>
+        <RowField
+          team="red"
+          role="top"
           className={`flex flex-row items-center bg-gray-500/50 ${state.red.top && "cursor-pointer"}`}
+          text={state.red.top}
+          textClassName="p-1 text-red-500 text-xl"
           onClick={handleFillFactory("red", "top")}
+          dispatch={dispatch}
         >
-          <span className="p-1 text-red-500 text-xl">{state.red.top}</span>
-        </div>
+        </RowField>
         <Button
           className="p-1 bg-white text-blue-500 rounded"
           onClick={handleSwapFactory("top")}
@@ -198,18 +204,26 @@ export default function Main({ state, dispatch }: MainProps) {
         >
           <Image src="/jg-logo.png" height={40} width={40} alt="Jungle Logo" />
         </Button>
-        <div
+        <RowField
+          team="blue"
+          role="jungle"
           className={`flex flex-row items-center bg-gray-500/50 ${state.blue.jungle && "cursor-pointer"}`}
+          text={state.blue.jungle}
+          textClassName="p-1 text-blue-500 text-xl"
           onClick={handleFillFactory("blue", "jungle")}
+          dispatch={dispatch}
         >
-          <span className="p-1 text-blue-500 text-xl">{state.blue.jungle}</span>
-        </div>
-        <div
+        </RowField>
+        <RowField
+          team="red"
+          role="jungle"
           className={`flex flex-row items-center bg-gray-500/50 ${state.red.jungle && "cursor-pointer"}`}
+          text={state.red.jungle}
+          textClassName="p-1 text-red-500 text-xl"
           onClick={handleFillFactory("red", "jungle")}
+          dispatch={dispatch}
         >
-          <span className="p-1 text-red-500 text-xl">{state.red.jungle}</span>
-        </div>
+        </RowField>
         <Button
           className="p-1 bg-white text-blue-500 rounded"
           onClick={handleSwapFactory("jungle")}
@@ -224,18 +238,26 @@ export default function Main({ state, dispatch }: MainProps) {
         >
           <Image src="/mid-logo.png" height={40} width={40} alt="Mid Logo" />
         </Button>
-        <div
+        <RowField
+          team="blue"
+          role="mid"
           className={`flex flex-row items-center bg-gray-500/50 ${state.blue.mid && "cursor-pointer"}`}
+          text={state.blue.mid}
+          textClassName="p-1 text-blue-500 text-xl"
           onClick={handleFillFactory("blue", "mid")}
+          dispatch={dispatch}
         >
-          <span className="p-1 text-blue-500 text-xl">{state.blue.mid}</span>
-        </div>
-        <div
+        </RowField>
+        <RowField
+          team="red"
+          role="mid"
           className={`flex flex-row items-center bg-gray-500/50 ${state.red.mid && "cursor-pointer"}`}
+          text={state.red.mid}
+          textClassName="p-1 text-red-500 text-xl"
           onClick={handleFillFactory("red", "mid")}
+          dispatch={dispatch}
         >
-          <span className="p-1 text-red-500 text-xl">{state.red.mid}</span>
-        </div>
+        </RowField>
         <Button
           className="p-1 bg-white text-blue-500 rounded"
           onClick={handleSwapFactory("mid")}
@@ -250,18 +272,26 @@ export default function Main({ state, dispatch }: MainProps) {
         >
           <Image src="/bot-logo.png" height={40} width={40} alt="Bot Logo" />
         </Button>
-        <div
+        <RowField
+          team="blue"
+          role="bot"
           className={`flex flex-row items-center bg-gray-500/50 ${state.blue.bot && "cursor-pointer"}`}
+          text={state.blue.bot}
+          textClassName="p-1 text-blue-500 text-xl"
           onClick={handleFillFactory("blue", "bot")}
+          dispatch={dispatch}
         >
-          <span className="p-1 text-blue-500 text-xl">{state.blue.bot}</span>
-        </div>
-        <div
+        </RowField>
+        <RowField
+          team="red"
+          role="bot"
           className={`flex flex-row items-center bg-gray-500/50 ${state.red.bot && "cursor-pointer"}`}
+          text={state.red.bot}
+          textClassName="p-1 text-red-500 text-xl"
           onClick={handleFillFactory("red", "bot")}
+          dispatch={dispatch}
         >
-          <span className="p-1 text-red-500 text-xl">{state.red.bot}</span>
-        </div>
+        </RowField>
         <Button
           className="p-1 bg-white text-blue-500 rounded"
           onClick={handleSwapFactory("bot")}
@@ -281,20 +311,26 @@ export default function Main({ state, dispatch }: MainProps) {
             alt="Support Logo"
           />
         </Button>
-        <div
+        <RowField
+          team="blue"
+          role="support"
           className={`flex flex-row items-center bg-gray-500/50 ${state.blue.support && "cursor-pointer"}`}
+          text={state.blue.support}
+          textClassName="p-1 text-blue-500 text-xl"
           onClick={handleFillFactory("blue", "support")}
+          dispatch={dispatch}
         >
-          <span className="p-1 text-blue-500 text-xl">
-            {state.blue.support}
-          </span>
-        </div>
-        <div
+        </RowField>
+        <RowField
+          team="red"
+          role="support"
           className={`flex flex-row items-center bg-gray-500/50 ${state.red.support && "cursor-pointer"}`}
+          text={state.red.support}
+          textClassName="p-1 text-red-500 text-xl"
           onClick={handleFillFactory("red", "support")}
+          dispatch={dispatch}
         >
-          <span className="p-1 text-red-500 text-xl">{state.red.support}</span>
-        </div>
+        </RowField>
         <Button
           className="p-1 bg-white text-blue-500 rounded"
           onClick={handleSwapFactory("support")}
