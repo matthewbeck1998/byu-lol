@@ -1,7 +1,7 @@
 import { Button } from "@mui/base";
 import Image from "next/image";
 import React from "react";
-import { Dispatch, PropsWithChildren } from "react";
+import { Dispatch, PropsWithChildren, useState } from "react";
 import { Action, State, Team } from "./page";
 import { Summoner } from "./api/route";
 
@@ -58,8 +58,12 @@ export default function Customs({ state, dispatch }: CustomsProps) {
         fetchData();
       }, []);
 
+    const handleAdd = (player: string) => {
+      dispatch({ type: "ADD", player });
+    };
+
   return (
-    <div className="flex-1 mt-5 grid grid-cols-[1fr_100px_100px_150px] auto-rows-[32px] gap-4 max-h-[500px] overflow-y-scroll">
+    <div className="flex-1 mt-5 grid grid-cols-[1fr_100px_100px_150px_80px] auto-rows-[32px] gap-4 max-h-[500px] overflow-y-scroll">
       <Row>
         <div className="flex items-center">
           <span className="p-1 text-3xl">Player Name</span>
@@ -73,6 +77,7 @@ export default function Customs({ state, dispatch }: CustomsProps) {
         <div className="flex flex-row items-center">
           <span className="p-1 text-yellow-500 text-3xl">Win Rate</span>
         </div>
+        <div />
       </Row>
 
       {Object.keys(summoners).map((key) => (
@@ -81,6 +86,9 @@ export default function Customs({ state, dispatch }: CustomsProps) {
             <RowText className="flex flex-row items-center bg-gray-500/50" text={summoners[key][0].wins} />
             <RowText className="flex flex-row items-center bg-gray-500/50" text={summoners[key][0].losses} />
             <RowText className="flex flex-row items-center bg-gray-500/50" text={summoners[key][0].winrate} />
+            <Button className="p-1 bg-blue-500 rounded" onClick={() => handleAdd(key)}>
+              Add
+            </Button>
         </Row>
       ))}
     </div>

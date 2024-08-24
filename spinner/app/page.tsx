@@ -256,8 +256,9 @@ export default function Home() {
       </DndProvider>
       }
       {menuState.selected == "RANKED" &&
-      <div className="p-4">
+      <div className="grid grid-cols-[3fr_1fr] gap-8 p-4">
         <Customs state={state} dispatch={dispatch} />
+        <Sidebar state={state} dispatch={dispatch} />
       </div>
       }
     </div>
