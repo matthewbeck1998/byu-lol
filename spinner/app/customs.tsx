@@ -1,29 +1,12 @@
 import { Button } from "@mui/base";
-import Image from "next/image";
 import React from "react";
 import { Dispatch, PropsWithChildren, useState } from "react";
-import { Action, State, Team } from "./page";
+import { Action, State } from "./page";
 import { Summoner } from "./api/route";
 
 function Row(props: PropsWithChildren) {
   const { children } = props;
   return <>{children}</>;
-}
-
-interface RowFieldProps {
-  team: "blue" | "red";
-  role: keyof Team;
-  className: string;
-  text: string;
-  textClassName: string;
-  onClick: () => void;
-  dispatch: Dispatch<Action>;
-}
-
-function RowField({team, role, className, text, textClassName, onClick, dispatch}: RowFieldProps) {
-  return <div className={className} onClick={onClick}>
-      <RowText className={textClassName} text={text} />
-  </div>
 }
 
 interface RowTextProps {
@@ -43,7 +26,7 @@ type CustomsProps = {
 };
 
 export default function Customs({ state, dispatch }: CustomsProps) {
-    const [summoners, setSummoners] = React.useState<Record<string, Summoner[]>>(
+    const [summoners, setSummoners] = useState<Record<string, Summoner[]>>(
         {}
       );
     
