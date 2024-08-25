@@ -5,6 +5,7 @@ import { useReducer } from "react";
 import Header from "./header";
 import Main from "./main";
 import Sidebar from "./sidebar";
+import Customs from "./customs";
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
@@ -26,6 +27,11 @@ export type State = {
   chosen: string;
 };
 
+export type MenuState = {
+  selected: string;
+  title: string;
+}
+
 export type Action =
   | AddAction
   | DeleteAction
@@ -36,6 +42,10 @@ export type Action =
   | ClearAction
   | FillAction
   | TrashAction;
+
+export type MenuAction =
+  | SpinnerAction
+  | RankedAction;
 
 type AddAction = {
   type: "ADD";
@@ -87,12 +97,25 @@ type TrashAction = {
   role: keyof Team | null;
 };
 
+type SpinnerAction = {
+  type: "SPINNER";
+}
+
+type RankedAction = {
+  type: "RANKED";
+}
+
 const initialState: State = {
   blue: { top: "", jungle: "", mid: "", bot: "", support: "", fill: "" },
   red: { top: "", jungle: "", mid: "", bot: "", support: "", fill: "" },
   chosen: "",
   players: [],
 };
+
+const initialMenuState: MenuState = {
+  selected: "SPINNER",
+  title: "BYU LoL Spinner",
+}
 
 const reducer = (state: State, action: Action) => {
   switch (action.type) {
@@ -192,8 +215,28 @@ const reducer = (state: State, action: Action) => {
   }
 };
 
+const menuReducer = (state: MenuState, action: MenuAction) => {
+  switch (action.type) {
+    case "SPINNER":
+      return {
+        selected: "SPINNER",
+        title: "BYU LoL Spinner",
+      };
+
+    case "RANKED":
+      return {
+        selected: "RANKED",
+        title: "Ranked Customs W/L",
+      };
+
+    default:
+      return state;
+  }
+};
+
 export default function Home() {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [menuState, menuDispatch] = useReducer(menuReducer, initialMenuState);
 
   return (
     <div
@@ -203,13 +246,21 @@ export default function Home() {
         backgroundSize: "cover",
       }}
     >
-      <Header />
+      <Header state={menuState} dispatch={menuDispatch} />
+      {menuState.selected == "SPINNER" && 
       <DndProvider backend={HTML5Backend}>
         <div className="grid grid-cols-[3fr_1fr] gap-8 p-4">
           <Main state={state} dispatch={dispatch} />
           <Sidebar state={state} dispatch={dispatch} />
         </div>
       </DndProvider>
+      }
+      {menuState.selected == "RANKED" &&
+      <div className="grid grid-cols-[3fr_1fr] gap-8 p-4">
+        <Customs state={state} dispatch={dispatch} />
+        <Sidebar state={state} dispatch={dispatch} />
+      </div>
+      }
     </div>
   );
 }
