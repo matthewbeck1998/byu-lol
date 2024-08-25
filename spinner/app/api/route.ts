@@ -1,6 +1,6 @@
 /* Fetching */
 
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
 export type Summoner = {
   wins: string;
@@ -8,7 +8,7 @@ export type Summoner = {
   winrate: string;
 };
 
-type SummonerWithName = { name: string } & Summoner;
+export type SummonerWithName = { name: string } & Summoner;
 
 const spreadsheetId = "1Dat4a9UNOTPPmFNhvh9GnW84fwNqKtwBDNtgIei4E4k";
 
@@ -19,18 +19,18 @@ const getRows = async (): Promise<SummonerWithName[][]> => {
   const response = await fetch(url);
   const result = await response.json();
 
-  const rowsWithDate = result.valueRanges.map((valueRange: any) =>
+  const rows = result.valueRanges.map((valueRange: any) =>
     valueRange.values
       .map(([name, wins, losses, winrate]: string[]) => ({ name, wins, losses, winrate }))
   );
 
-  return rowsWithDate;
+  return rows;
 };
 
-const aggregateSummoners = (rowsWithDate: SummonerWithName[][]) => {
+const aggregateSummoners = (rows: SummonerWithName[][]) => {
   const summonersByName: Record<string, Summoner[]> = {};
 
-  rowsWithDate.forEach((rows) => {
+  rows.forEach((rows) => {
     rows.forEach(({ name, wins, losses, winrate }) => {
       let summoner = summonersByName[name];
       if (!summoner) summonersByName[name] = summoner = [];
@@ -41,9 +41,37 @@ const aggregateSummoners = (rowsWithDate: SummonerWithName[][]) => {
   return summonersByName;
 };
 
+const putRows = async (rows: SummonerWithName[]): Promise<string> => {
+  const API_KEY = process.env.API_KEY;
+  const rangesParams = "B31:E";
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values:batchUpdate?key=${API_KEY}`;
+  const body = JSON.stringify({
+    "valueInputOption": "USER_ENTERED",
+    "data": [
+      {
+        "range": "B31",
+        "majorDimension": "COLUMNS",
+        "values": [
+          ["hello"]
+        ],
+      }
+    ],
+  });
+  const response = await fetch(url, { method: "POST", resource: body });
+  const result = await response.json();
+
+  return result;
+}
+
 export const GET = async () => {
   const rows = await getRows();
   const summonersByName = aggregateSummoners(rows);
 
-  return NextResponse.json({ summoners: summonersByName });
+  return NextResponse.json({ summoners: rows[0] });
 };
+
+export const POST = async (req: NextRequest) => {
+  const body = await req.json();
+  const result = await putRows(body.summoners);
+  return NextResponse.json({ status: 200, a: body, result: result });
+}
